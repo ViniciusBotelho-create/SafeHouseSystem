@@ -51,10 +51,9 @@ public class PersonTests
     [Fact]
     public void Should_Throw_Exception_When_Age_Is_Negative()
     {
-        // Act
+
         Action action = () => new Person("John", -1);
 
-        // Assert
         action.Should()
             .Throw<ArgumentException>()
             .WithMessage("Age cannot be negative");
@@ -63,14 +62,12 @@ public class PersonTests
     [Fact]
     public void Should_Generate_Different_Ids_For_Persons_With_Same_Name()
     {
-        // Arrange
         var name = "John";
 
-        // Act
+
         var person1 = new Person(name, 25);
         var person2 = new Person(name, 30);
 
-        // Assert
         person1.Id.Should().NotBe(person2.Id);
     }
 }

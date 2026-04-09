@@ -8,6 +8,9 @@ public class Person
     public string Name { get; private set; }
     public int Age { get; private set; }
 
+    private readonly List<Transaction> _transactions = new();
+    public IReadOnlyCollection<Transaction> Transactions => _transactions;
+
     public Person(string name, int age)
     {
         Id = Guid.NewGuid();
@@ -29,11 +32,22 @@ public class Person
             throw new ArgumentException("Age cannot be negative");
     }
 
-    public void AddTransaction(string description, decimal amount, TransactionType type)
+    public void AddTransaction(string description, decimal amount, TransactionType type, Category category)
     {
+        // Regra 1: menor de idade não pode ter receita
         if (Age < 18 && type == TransactionType.Income)
             throw new ArgumentException("Minors cannot have income");
 
-        // implement logic to add transaction to person's record
+        // Regra 2: categoria compatível com tipo
+        if (type == TransactionType.Expense && category.Finality == CategoryFinality.Income)
+            throw new ArgumentException("Invalid category for expense");
+
+        if (type == TransactionType.Income && category.Finality == CategoryFinality.Expense)
+            throw new ArgumentException("Invalid category for income");
+
+        // Criação da transação
+        var transaction = new Transaction(description, amount, type);
+
+        _transactions.Add(transaction);
     }
 }
