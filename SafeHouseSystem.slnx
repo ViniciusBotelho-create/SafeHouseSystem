@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SafeHouseSystem.Api/SafeHouseSystem.Api.csproj" />
+  <Project Path="SafeHouseSystem.Application/SafeHouseSystem.Application.csproj" />
+  <Project Path="SafeHouseSystem.Domain/SafeHouseSystem.Domain.csproj" />
+  <Project Path="SafeHouseSystem.Infrastructure/SafeHouseSystem.Infrastructure.csproj" />
+  <Project Path="SafeHouseSystem.Tests/SafeHouseSystem.Tests.csproj" />
+</Solution>

@@ -1,0 +1,6 @@
+@SafeHouseSystem.Api_HostAddress = http://localhost:5027
+
+GET {{SafeHouseSystem.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
