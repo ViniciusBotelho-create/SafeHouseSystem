@@ -483,3 +483,5 @@ $RECYCLE.BIN/
 
 #Database file
 *.db
+*.db-shm
+*.db-wal

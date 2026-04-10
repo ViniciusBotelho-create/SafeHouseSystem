@@ -1,17 +1,15 @@
-﻿namespace SafeHouseSystem.Domain.Entities;
-
-using SafeHouseSystem.Domain.Enums;
+﻿using SafeHouseSystem.Domain.Enums;
 
 public class Category
 {
     public Guid Id { get; private set; }
-    public string Description { get; private set; }
+    public string Name { get; private set; }
     public CategoryFinality Finality { get; private set; }
 
-    public Category(string description, CategoryFinality finality)
+    public Category(string name, CategoryFinality finality)
     {
         Id = Guid.NewGuid();
-        Description = description;
+        Name = name;
         Finality = finality;
 
         Validate();
@@ -19,10 +17,13 @@ public class Category
 
     private void Validate()
     {
-        if (string.IsNullOrWhiteSpace(Description))
-            throw new ArgumentException("Description cannot be empty");
+        if (string.IsNullOrWhiteSpace(Name))
+            throw new ArgumentException("Name cannot be empty");
 
-        if (Description.Length > 400)
-            throw new ArgumentException("Description cannot exceed 400 characters");
+        if (Name.Length > 100)
+            throw new ArgumentException("Name cannot exceed 100 characters");
+
+        if (!Enum.IsDefined(typeof(CategoryFinality), Finality))
+            throw new ArgumentException("Invalid category finality");
     }
 }
