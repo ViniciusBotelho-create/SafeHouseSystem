@@ -10,13 +10,13 @@ public class CategoryTests
     [Fact]
     public void Should_Create_Valid_Category()
     {
-        // Arrange
+
         var description = "Food";
 
-        // Act
+
         var category = new Category(description, CategoryFinality.Expense);
 
-        // Assert
+
         category.Description.Should().Be(description);
         category.Finality.Should().Be(CategoryFinality.Expense);
         category.Id.Should().NotBeEmpty();
