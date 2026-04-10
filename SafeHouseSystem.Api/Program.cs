@@ -12,17 +12,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=safehouse.db"));
+
 //dependency injection
 builder.Services.AddScoped<IPersonService, PersonService>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=safehouse.db"));
 
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+
+builder.Services.AddControllers();
+
+
+
+
+
 var app = builder.Build();
 
 
-
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
