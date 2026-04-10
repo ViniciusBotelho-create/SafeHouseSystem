@@ -18,6 +18,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 //dependency injection
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
