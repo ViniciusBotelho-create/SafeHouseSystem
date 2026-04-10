@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 //dependency injection
 builder.Services.AddScoped<IPersonService, PersonService>();
+<<<<<<< HEAD
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=safehouse.db"));
@@ -30,6 +31,11 @@ builder.Services.AddControllers();
 
 
 
+=======
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+
+builder.Services.AddControllers();
+>>>>>>> bfc0876 (chore: update Program.cs before merging infrastructure)
 
 var app = builder.Build();
 

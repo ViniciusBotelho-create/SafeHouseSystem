@@ -22,7 +22,9 @@ public class PersonController : ControllerBase
         try
         {
             _service.Create(dto);
+
             return Created("", dto); 
+
         }
         catch (ArgumentException ex)
         {
