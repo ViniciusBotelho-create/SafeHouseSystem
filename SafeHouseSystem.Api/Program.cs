@@ -1,5 +1,8 @@
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using SafeHouseSystem.Infrastructure.Data;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +14,10 @@ builder.Services.AddSwaggerGen();
 
 //dependency injection
 builder.Services.AddScoped<IPersonService, PersonService>();
-builder.Services.AddScoped<IPersonRepository, InMemoryPersonRepository>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=safehouse.db"));
+
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 
 var app = builder.Build();
 
