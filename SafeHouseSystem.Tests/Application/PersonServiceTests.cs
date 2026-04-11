@@ -4,6 +4,7 @@ using Moq;
 
 using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
+using SafeHouseSystem.Application.Services;
 using SafeHouseSystem.Domain.Entities;
 
 

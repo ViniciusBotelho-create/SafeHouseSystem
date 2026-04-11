@@ -10,14 +10,11 @@ public class CategoryTests
     [Fact]
     public void Should_Create_Valid_Category()
     {
+        var description = "Food";
 
-        var name = "Food";
+        var category = new Category(description, CategoryFinality.Expense);
 
-
-        var category = new Category(name, CategoryFinality.Expense);
-
-
-        category.Name.Should().Be(name);
+        category.Description.Should().Be(description);
         category.Finality.Should().Be(CategoryFinality.Expense);
         category.Id.Should().NotBeEmpty();
     }
@@ -29,18 +26,18 @@ public class CategoryTests
 
         action.Should()
             .Throw<ArgumentException>()
-            .WithMessage("Name cannot be empty");
+            .WithMessage("Description cannot be empty");
     }
 
     [Fact]
     public void Should_Throw_Exception_When_Description_Exceeds_Max_Length()
     {
-        var longName = new string('a', 101);
+        var longDescription = new string('a', 401);
 
-        Action action = () => new Category(longName, CategoryFinality.Expense);
+        Action action = () => new Category(longDescription, CategoryFinality.Expense);
 
         action.Should()
             .Throw<ArgumentException>()
-            .WithMessage("Name cannot exceed 100 characters");
+            .WithMessage("Description cannot exceed 400 characters");
     }
 }

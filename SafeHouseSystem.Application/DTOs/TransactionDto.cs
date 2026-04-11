@@ -10,5 +10,5 @@ public class TransactionDto
     public TransactionType Type { get; set; }
 
     public Guid CategoryId { get; set; }
-    public string CategoryName{ get; set; } = string.Empty;
+    public string CategoryDescription{ get; set; } = string.Empty;
 }

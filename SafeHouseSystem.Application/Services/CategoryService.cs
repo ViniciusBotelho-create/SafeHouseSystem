@@ -13,8 +13,7 @@ public class CategoryService : ICategoryService
 
     public void Create(CreateCategoryDto dto)
     {
-        var category = new Category(dto.Name, dto.Finality);
-
+        var category = new Category(dto.Description, dto.Finality);
         _repository.Add(category);
     }
 
@@ -24,7 +23,7 @@ public class CategoryService : ICategoryService
             .Select(c => new CategoryDto
             {
                 Id = c.Id,
-                Name = c.Name,
+                Description = c.Description,
                 Finality = c.Finality
             });
     }
@@ -39,7 +38,7 @@ public class CategoryService : ICategoryService
         return new CategoryDto
         {
             Id = category.Id,
-            Name = category.Name,
+            Description = category.Description,
             Finality = category.Finality
         };
     }

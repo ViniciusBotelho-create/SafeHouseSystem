@@ -15,16 +15,13 @@ public class PersonController : ControllerBase
         _service = service;
     }
 
-
     [HttpPost]
     public IActionResult Create([FromBody] CreatePersonDto dto)
     {
         try
         {
             _service.Create(dto);
-
-            return Created("", dto); 
-
+            return Created("", dto);
         }
         catch (ArgumentException ex)
         {
@@ -32,14 +29,12 @@ public class PersonController : ControllerBase
         }
     }
 
-
     [HttpGet]
     public IActionResult GetAll()
     {
         var persons = _service.GetAll();
         return Ok(persons);
     }
-
 
     [HttpGet("{id}")]
     public IActionResult GetById(Guid id)
@@ -52,6 +47,19 @@ public class PersonController : ControllerBase
         return Ok(person);
     }
 
+    [HttpPut("{id}")]
+    public IActionResult Update(Guid id, [FromBody] UpdatePersonDto dto)
+    {
+        try
+        {
+            _service.Update(id, dto);
+            return NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(Guid id)
@@ -65,5 +73,13 @@ public class PersonController : ControllerBase
         {
             return NotFound(new { message = "Person not found" });
         }
+    }
+
+
+    [HttpGet("summary")]
+    public IActionResult GetSummary()
+    {
+        var summary = _service.GetSummary();
+        return Ok(summary);
     }
 }

@@ -1,6 +1,9 @@
 ﻿using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
+using SafeHouseSystem.Domain.Enums;
+
+namespace SafeHouseSystem.Application.Services;
 
 public class PersonService : IPersonService
 {
@@ -41,6 +44,16 @@ public class PersonService : IPersonService
         };
     }
 
+    public void Update(Guid id, UpdatePersonDto dto)
+    {
+        var person = _repository.GetById(id);
+
+        if (person is null)
+            throw new ArgumentException("Person not found");
+
+        person.Update(dto.Name, dto.Age);
+        _repository.Update(person);
+    }
 
     public void Delete(Guid id)
     {
@@ -50,5 +63,29 @@ public class PersonService : IPersonService
             throw new ArgumentException("Person not found");
 
         _repository.Delete(id);
+    }
+
+    public SummaryDto GetSummary()
+    {
+        var persons = _repository.GetAllWithTransactions();
+
+        var personTotals = persons.Select(p => new PersonTotalsDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            TotalIncome = p.Transactions
+                .Where(t => t.Type == TransactionType.Income)
+                .Sum(t => t.Amount),
+            TotalExpense = p.Transactions
+                .Where(t => t.Type == TransactionType.Expense)
+                .Sum(t => t.Amount)
+        }).ToList();
+
+        return new SummaryDto
+        {
+            Persons = personTotals,
+            TotalIncome = personTotals.Sum(p => p.TotalIncome),
+            TotalExpense = personTotals.Sum(p => p.TotalExpense)
+        };
     }
 }

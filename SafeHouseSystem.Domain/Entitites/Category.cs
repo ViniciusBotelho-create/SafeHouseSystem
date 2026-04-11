@@ -1,15 +1,17 @@
 ﻿using SafeHouseSystem.Domain.Enums;
 
+namespace SafeHouseSystem.Domain.Entities;
+
 public class Category
 {
     public Guid Id { get; private set; }
-    public string Name { get; private set; }
+    public string Description { get; private set; }
     public CategoryFinality Finality { get; private set; }
 
-    public Category(string name, CategoryFinality finality)
+    public Category(string description, CategoryFinality finality)
     {
         Id = Guid.NewGuid();
-        Name = name;
+        Description = description;
         Finality = finality;
 
         Validate();
@@ -17,11 +19,11 @@ public class Category
 
     private void Validate()
     {
-        if (string.IsNullOrWhiteSpace(Name))
-            throw new ArgumentException("Name cannot be empty");
+        if (string.IsNullOrWhiteSpace(Description))
+            throw new ArgumentException("Description cannot be empty");
 
-        if (Name.Length > 100)
-            throw new ArgumentException("Name cannot exceed 100 characters");
+        if (Description.Length > 400)
+            throw new ArgumentException("Description cannot exceed 400 characters");
 
         if (!Enum.IsDefined(typeof(CategoryFinality), Finality))
             throw new ArgumentException("Invalid category finality");

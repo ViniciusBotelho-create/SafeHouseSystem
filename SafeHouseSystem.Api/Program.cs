@@ -1,4 +1,5 @@
 using SafeHouseSystem.Application.Interfaces;
+using SafeHouseSystem.Application.Services;
 using SafeHouseSystem.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using SafeHouseSystem.Infrastructure.Data;

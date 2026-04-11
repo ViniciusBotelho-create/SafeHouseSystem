@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Moq;
-using Xunit;
 
 using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
@@ -20,7 +19,7 @@ public class CategoryServiceTests
 
         var dto = new CreateCategoryDto
         {
-            Name = "Food",
+            Description = "Food",
             Finality = CategoryFinality.Expense
         };
 
@@ -30,13 +29,13 @@ public class CategoryServiceTests
         // Assert
         repositoryMock.Verify(r =>
             r.Add(It.Is<Category>(c =>
-                c.Name == "Food" &&
+                c.Description == "Food" &&
                 c.Finality == CategoryFinality.Expense)),
             Times.Once);
     }
 
     [Fact]
-    public void Should_Throw_Exception_When_Name_Is_Invalid()
+    public void Should_Throw_Exception_When_Description_Is_Invalid()
     {
         // Arrange
         var repositoryMock = new Mock<ICategoryRepository>();
@@ -44,7 +43,7 @@ public class CategoryServiceTests
 
         var dto = new CreateCategoryDto
         {
-            Name = "",
+            Description = "",
             Finality = CategoryFinality.Expense
         };
 
@@ -54,7 +53,7 @@ public class CategoryServiceTests
         // Assert
         action.Should()
             .Throw<ArgumentException>()
-            .WithMessage("Name cannot be empty");
+            .WithMessage("Description cannot be empty");
     }
 
     [Fact]
@@ -77,7 +76,7 @@ public class CategoryServiceTests
 
         // Assert
         result.Should().HaveCount(2);
-        result.First().Name.Should().Be("Food");
+        result.First().Description.Should().Be("Food");
     }
 
     [Fact]
@@ -97,7 +96,7 @@ public class CategoryServiceTests
         // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be(category.Id);
-        result.Name.Should().Be("Food");
+        result.Description.Should().Be("Food");
     }
 
     [Fact]
@@ -140,7 +139,6 @@ public class CategoryServiceTests
     {
         // Arrange
         var repositoryMock = new Mock<ICategoryRepository>();
-
         var id = Guid.NewGuid();
 
         repositoryMock.Setup(r => r.GetById(id))

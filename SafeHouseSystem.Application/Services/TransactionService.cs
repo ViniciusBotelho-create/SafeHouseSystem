@@ -47,7 +47,7 @@ public class TransactionService : ITransactionService
                 Amount = t.Amount,
                 Type = t.Type,
                 CategoryId = t.Category.Id,
-                CategoryName = t.Category.Name
+                CategoryDescription = t.Category.Description
             });
     }
 
@@ -63,7 +63,7 @@ public class TransactionService : ITransactionService
             Amount = t.Amount,
             Type = t.Type,
             CategoryId = t.Category.Id,
-            CategoryName = t.Category.Name
+            CategoryDescription = t.Category.Description
         };
     }
 

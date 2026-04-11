@@ -8,13 +8,21 @@ public class Person
     public string Name { get; private set; }
     public int Age { get; private set; }
 
-
     private readonly List<Transaction> _transactions = new();
     public IReadOnlyCollection<Transaction> Transactions => _transactions;
 
     public Person(string name, int age)
     {
         Id = Guid.NewGuid();
+        Name = name;
+        Age = age;
+
+        Validate();
+    }
+
+
+    public void Update(string name, int age)
+    {
         Name = name;
         Age = age;
 
@@ -39,7 +47,6 @@ public class Person
             throw new ArgumentException("Minors cannot have income");
 
         var transaction = new Transaction(description, amount, type, category, Id);
-
         _transactions.Add(transaction);
     }
 }

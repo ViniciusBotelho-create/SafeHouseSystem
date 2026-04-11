@@ -9,4 +9,5 @@ public interface IPersonRepository
     void Delete(Guid id);
     Person? GetById(Guid id);
     IEnumerable<Person> GetAll();
+    IEnumerable<Person> GetAllWithTransactions();
 }

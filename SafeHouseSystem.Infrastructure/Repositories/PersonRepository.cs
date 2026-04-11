@@ -26,7 +26,6 @@ public class PersonRepository : IPersonRepository
         _context.SaveChanges();
     }
 
-
     public void Delete(Guid id)
     {
         var person = _context.Persons.Find(id);
@@ -46,5 +45,13 @@ public class PersonRepository : IPersonRepository
     public IEnumerable<Person> GetAll()
     {
         return _context.Persons.ToList();
+    }
+
+
+    public IEnumerable<Person> GetAllWithTransactions()
+    {
+        return _context.Persons
+            .Include(p => p.Transactions)
+            .ToList();
     }
 }
