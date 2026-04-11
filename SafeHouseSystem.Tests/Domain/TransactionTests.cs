@@ -14,13 +14,11 @@ public class TransactionTests
     [Fact]
     public void Should_Create_Valid_Expense_Transaction()
     {
-
         var description = "Food";
         var amount = 50;
+        var category = new Category("Food", CategoryFinality.Expense);
 
-
-        var transaction = new Transaction(description, amount, TransactionType.Expense);
-
+        var transaction = Transaction.CreateExpense(description, amount, category);
 
         transaction.Description.Should().Be(description);
         transaction.Amount.Should().Be(amount);
@@ -30,7 +28,9 @@ public class TransactionTests
     [Fact]
     public void Should_Throw_Exception_When_Amount_Is_Negative()
     {
-        Action action = () => new Transaction("Food", -10, TransactionType.Expense);
+        var category = new Category("Food", CategoryFinality.Expense);
+
+        Action action = () => Transaction.CreateExpense("Food", -10, category);
 
         action.Should().Throw<ArgumentException>()
             .WithMessage("Amount must be greater than zero");
@@ -39,7 +39,9 @@ public class TransactionTests
     [Fact]
     public void Should_Throw_Exception_When_Description_Is_Empty()
     {
-        Action action = () => new Transaction("", 10, TransactionType.Expense);
+        var category = new Category("Food", CategoryFinality.Expense);
+
+        Action action = () => Transaction.CreateExpense("", 10, category);
 
         action.Should().Throw<ArgumentException>()
             .WithMessage("Description cannot be empty");
@@ -103,19 +105,26 @@ public class TransactionTests
         action.Should().NotThrow();
     }
 
+
     [Fact]
-    public void Should_Not_Allow_Income_For_Minor_Even_With_Valid_Category()
+    public void Should_Throw_When_Description_Too_Long()
     {
+        var longDescription = new string('a', 401);
 
-        var person = new Person("John", 15);
-        var category = new Category("Salary", CategoryFinality.Income);
-
-
-        Action action = () => person.AddTransaction("Test", 100, TransactionType.Income, category);
-
+        Action action = () => new Transaction(longDescription, 10, TransactionType.Expense, new Category("Food", CategoryFinality.Expense));
 
         action.Should()
             .Throw<ArgumentException>()
-            .WithMessage("Minors cannot have income");
+            .WithMessage("Description cannot exceed 400 characters");
+    }
+
+    [Fact]
+    public void Should_Throw_When_Amount_Is_Zero()
+    {
+        Action action = () => new Transaction("Food", 0, TransactionType.Expense, new Category("Food", CategoryFinality.Expense));
+
+        action.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("Amount must be greater than zero");
     }
 }

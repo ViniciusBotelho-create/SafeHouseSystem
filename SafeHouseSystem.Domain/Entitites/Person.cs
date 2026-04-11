@@ -34,19 +34,10 @@ public class Person
 
     public void AddTransaction(string description, decimal amount, TransactionType type, Category category)
     {
-
         if (Age < 18 && type == TransactionType.Income)
             throw new ArgumentException("Minors cannot have income");
 
-
-        if (type == TransactionType.Expense && category.Finality == CategoryFinality.Income)
-            throw new ArgumentException("Invalid category for expense");
-
-        if (type == TransactionType.Income && category.Finality == CategoryFinality.Expense)
-            throw new ArgumentException("Invalid category for income");
-
-
-        var transaction = new Transaction(description, amount, type);
+        var transaction = new Transaction(description, amount, type, category);
 
         _transactions.Add(transaction);
     }
