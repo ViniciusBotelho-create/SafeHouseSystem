@@ -134,7 +134,13 @@ public class TransactionServiceTests
     public void Should_Return_Transaction_By_Id()
     {
         var category = new Category("Food", CategoryFinality.Expense);
-        var transaction = new Transaction("Lunch", 50, TransactionType.Expense, category);
+        var personId = Guid.NewGuid();
+
+        var transaction = Transaction.CreateExpense(
+            "Lunch",
+            50,
+            category,
+            personId);
 
         var repoMock = new Mock<ITransactionRepository>();
         repoMock.Setup(r => r.GetById(transaction.Id)).Returns(transaction);
@@ -174,7 +180,13 @@ public class TransactionServiceTests
     public void Should_Delete_When_Transaction_Exists()
     {
         var category = new Category("Food", CategoryFinality.Expense);
-        var transaction = new Transaction("Lunch", 50, TransactionType.Expense, category);
+        var personId = Guid.NewGuid();
+
+        var transaction = Transaction.CreateExpense(
+            "Lunch",
+            50,
+            category,
+            personId);
 
         var repoMock = new Mock<ITransactionRepository>();
         repoMock.Setup(r => r.GetById(transaction.Id)).Returns(transaction);

@@ -14,7 +14,6 @@ public class PersonService : IPersonService
     public void Create(CreatePersonDto dto)
     {
         var person = new Person(dto.Name, dto.Age);
-
         _repository.Add(person);
     }
 
@@ -41,6 +40,7 @@ public class PersonService : IPersonService
             Age = person.Age
         };
     }
+
 
     public void Delete(Guid id)
     {

@@ -8,6 +8,7 @@ public class Person
     public string Name { get; private set; }
     public int Age { get; private set; }
 
+
     private readonly List<Transaction> _transactions = new();
     public IReadOnlyCollection<Transaction> Transactions => _transactions;
 
@@ -37,7 +38,7 @@ public class Person
         if (Age < 18 && type == TransactionType.Income)
             throw new ArgumentException("Minors cannot have income");
 
-        var transaction = new Transaction(description, amount, type, category);
+        var transaction = new Transaction(description, amount, type, category, Id);
 
         _transactions.Add(transaction);
     }

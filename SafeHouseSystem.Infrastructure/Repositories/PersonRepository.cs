@@ -1,4 +1,5 @@
-﻿using SafeHouseSystem.Application.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
 using SafeHouseSystem.Infrastructure.Data;
 
@@ -25,14 +26,16 @@ public class PersonRepository : IPersonRepository
         _context.SaveChanges();
     }
 
+
     public void Delete(Guid id)
     {
         var person = _context.Persons.Find(id);
-        if (person != null)
-        {
-            _context.Persons.Remove(person);
-            _context.SaveChanges();
-        }
+
+        if (person is null)
+            throw new ArgumentException("Person not found");
+
+        _context.Persons.Remove(person);
+        _context.SaveChanges();
     }
 
     public Person? GetById(Guid id)
