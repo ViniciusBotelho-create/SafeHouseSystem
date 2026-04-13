@@ -18,15 +18,8 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public IActionResult Create([FromBody] CreateTransactionDto dto)
     {
-        try
-        {
-            _service.Create(dto);
-            return Created("", dto);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        _service.Create(dto);
+        return Created("", dto);
     }
 
     [HttpGet]
@@ -40,10 +33,8 @@ public class TransactionController : ControllerBase
     public IActionResult GetById(Guid id)
     {
         var transaction = _service.GetById(id);
-
         if (transaction is null)
             return NotFound(new { message = "Transaction not found" });
-
         return Ok(transaction);
     }
 
@@ -54,32 +45,17 @@ public class TransactionController : ControllerBase
         return Ok(totals);
     }
 
-
     [HttpGet("totals-by-category/{categoryId}")]
     public IActionResult GetTotalsByCategoryId(Guid categoryId)
     {
-        try
-        {
-            var totals = _service.GetTotalsByCategoryId(categoryId);
-            return Ok(totals);
-        }
-        catch (ArgumentException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var totals = _service.GetTotalsByCategoryId(categoryId);
+        return Ok(totals);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(Guid id)
     {
-        try
-        {
-            _service.Delete(id);
-            return NoContent();
-        }
-        catch (ArgumentException)
-        {
-            return NotFound(new { message = "Transaction not found" });
-        }
+        _service.Delete(id);
+        return NoContent();
     }
 }

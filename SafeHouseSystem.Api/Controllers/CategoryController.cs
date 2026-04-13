@@ -18,16 +18,8 @@ public class CategoryController : ControllerBase
     [HttpPost]
     public IActionResult Create([FromBody] CreateCategoryDto dto)
     {
-        try
-        {
-            _service.Create(dto);
-
-            return Created("", dto);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        _service.Create(dto);
+        return Created("", dto);
     }
 
     [HttpGet]
@@ -41,24 +33,15 @@ public class CategoryController : ControllerBase
     public IActionResult GetById(Guid id)
     {
         var category = _service.GetById(id);
-
         if (category is null)
             return NotFound(new { message = "Category not found" });
-
         return Ok(category);
     }
 
     [HttpDelete("{id}")]
     public IActionResult Delete(Guid id)
     {
-        try
-        {
-            _service.Delete(id);
-            return NoContent();
-        }
-        catch (ArgumentException)
-        {
-            return NotFound(new { message = "Category not found" });
-        }
+        _service.Delete(id);
+        return NoContent();
     }
 }

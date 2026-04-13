@@ -1,8 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using SafeHouseSystem.Api.Middlewares;
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Application.Services;
-using SafeHouseSystem.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 using SafeHouseSystem.Infrastructure.Data;
+using SafeHouseSystem.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +41,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
