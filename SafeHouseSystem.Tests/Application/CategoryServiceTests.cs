@@ -5,6 +5,7 @@ using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
 using SafeHouseSystem.Domain.Enums;
+using SafeHouseSystem.Application.Services;
 
 namespace SafeHouseSystem.Tests.Application;
 

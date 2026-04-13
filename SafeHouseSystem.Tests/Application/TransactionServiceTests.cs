@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using SafeHouseSystem.Application.DTOs;
+using SafeHouseSystem.Application.Services;
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
 using SafeHouseSystem.Domain.Enums;
@@ -199,5 +200,94 @@ public class TransactionServiceTests
         service.Delete(transaction.Id);
 
         repoMock.Verify(r => r.Delete(transaction.Id), Times.Once);
+    }
+
+    [Fact]
+    public void Should_Return_Totals_By_Category()
+    {
+
+        var category = new Category("Food", CategoryFinality.Expense);
+        var personId = Guid.NewGuid();
+
+        var transactions = new List<(Guid, string, decimal)>
+    {
+        (category.Id, category.Description, 150)
+    };
+
+        var transactionRepoMock = new Mock<ITransactionRepository>();
+        transactionRepoMock
+            .Setup(r => r.GetTotalsByCategory())
+            .Returns(transactions);
+
+        var service = new TransactionService(
+            transactionRepoMock.Object,
+            Mock.Of<IPersonRepository>(),
+            Mock.Of<ICategoryRepository>());
+
+
+        var result = service.GetTotalsByCategory().ToList();
+
+
+        result.Should().HaveCount(1);
+        result.First().CategoryId.Should().Be(category.Id);
+        result.First().CategoryDescription.Should().Be("Food");
+        result.First().Total.Should().Be(150);
+    }
+
+    [Fact]
+    public void Should_Return_Totals_By_Specific_Category()
+    {
+
+        var category = new Category("Food", CategoryFinality.Expense);
+        var personId = Guid.NewGuid();
+
+        var categoryRepoMock = new Mock<ICategoryRepository>();
+        categoryRepoMock.Setup(r => r.GetById(category.Id)).Returns(category);
+
+        var transactions = new List<(Guid, string, decimal)>
+    {
+        (category.Id, category.Description, 150)
+    };
+
+        var transactionRepoMock = new Mock<ITransactionRepository>();
+        transactionRepoMock
+            .Setup(r => r.GetTotalsByCategoryId(category.Id))
+            .Returns(transactions);
+
+        var service = new TransactionService(
+            transactionRepoMock.Object,
+            Mock.Of<IPersonRepository>(),
+            categoryRepoMock.Object);
+
+
+        var result = service.GetTotalsByCategoryId(category.Id).ToList();
+
+
+        result.Should().HaveCount(1);
+        result.First().CategoryId.Should().Be(category.Id);
+        result.First().Total.Should().Be(150);
+    }
+
+    [Fact]
+    public void Should_Throw_When_Category_Not_Found_On_GetTotalsByCategoryId()
+    {
+
+        var categoryRepoMock = new Mock<ICategoryRepository>();
+        categoryRepoMock
+            .Setup(r => r.GetById(It.IsAny<Guid>()))
+            .Returns((Category?)null);
+
+        var service = new TransactionService(
+            Mock.Of<ITransactionRepository>(),
+            Mock.Of<IPersonRepository>(),
+            categoryRepoMock.Object);
+
+
+        Action action = () => service.GetTotalsByCategoryId(Guid.NewGuid());
+
+
+        action.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("Category not found");
     }
 }
