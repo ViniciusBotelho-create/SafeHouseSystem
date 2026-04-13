@@ -47,6 +47,28 @@ public class TransactionController : ControllerBase
         return Ok(transaction);
     }
 
+    [HttpGet("totals-by-category")]
+    public IActionResult GetTotalsByCategory()
+    {
+        var totals = _service.GetTotalsByCategory();
+        return Ok(totals);
+    }
+
+
+    [HttpGet("totals-by-category/{categoryId}")]
+    public IActionResult GetTotalsByCategoryId(Guid categoryId)
+    {
+        try
+        {
+            var totals = _service.GetTotalsByCategoryId(categoryId);
+            return Ok(totals);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
     [HttpDelete("{id}")]
     public IActionResult Delete(Guid id)
     {

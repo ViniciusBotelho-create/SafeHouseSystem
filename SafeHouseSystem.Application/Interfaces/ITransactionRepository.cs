@@ -9,4 +9,8 @@ public interface ITransactionRepository
 
     Transaction? GetById(Guid id);
     IEnumerable<Transaction> GetAll();
+
+    IEnumerable<(Guid CategoryId, string CategoryDescription, decimal Total)> GetTotalsByCategory();
+
+    IEnumerable<(Guid CategoryId, string CategoryDescription, decimal Total)> GetTotalsByCategoryId(Guid categoryId);
 }

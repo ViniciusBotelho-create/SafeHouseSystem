@@ -69,6 +69,32 @@ public class TransactionService : ITransactionService
         };
     }
 
+    public IEnumerable<CategoryTotalsDto> GetTotalsByCategory()
+    {
+        return _transactionRepository.GetTotalsByCategory()
+            .Select(x => new CategoryTotalsDto
+            {
+                CategoryId = x.CategoryId,
+                CategoryDescription = x.CategoryDescription,
+                Total = x.Total
+            });
+    }
+
+    public IEnumerable<CategoryTotalsDto> GetTotalsByCategoryId(Guid categoryId)
+    {
+        var category = _categoryRepository.GetById(categoryId);
+        if (category is null)
+            throw new ArgumentException("Category not found");
+
+        return _transactionRepository.GetTotalsByCategoryId(categoryId)
+            .Select(x => new CategoryTotalsDto
+            {
+                CategoryId = x.CategoryId,
+                CategoryDescription = x.CategoryDescription,
+                Total = x.Total
+            });
+    }
+
     public void Delete(Guid id)
     {
         var transaction = _transactionRepository.GetById(id);
