@@ -2,6 +2,10 @@
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
 
+
+namespace SafeHouseSystem.Application.Services;
+
+
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _repository;

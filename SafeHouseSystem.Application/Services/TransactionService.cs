@@ -1,6 +1,8 @@
 ﻿using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
-using SafeHouseSystem.Domain.Entities;
+
+
+namespace SafeHouseSystem.Application.Services;
 
 public class TransactionService : ITransactionService
 {
