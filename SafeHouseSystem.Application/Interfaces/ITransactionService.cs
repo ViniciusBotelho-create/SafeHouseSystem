@@ -9,5 +9,8 @@ public interface ITransactionService
     IEnumerable<TransactionDto> GetAll();
     TransactionDto? GetById(Guid id);
 
+    IEnumerable<CategoryTotalsDto> GetTotalsByCategory();
+
+    IEnumerable<CategoryTotalsDto> GetTotalsByCategoryId(Guid categoryId);
     void Delete(Guid id);
 }
