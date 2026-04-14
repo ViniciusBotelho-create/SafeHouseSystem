@@ -74,17 +74,16 @@ https://localhost:7099/api
 
 Em ambiente de desenvolvimento, a documentação interativa estará disponível em:
 
-https://localhost:xxxx/swagger
-Configurações importantes
-CORS
 
+# Configurações importantes
+CORS
 A API está configurada para aceitar requisições do front-end:
 
 http://localhost:5173
 
 ## Observações
 
-Certifique-se de que o banco SQLite está disponível
-O arquivo safehouse.db será criado automaticamente ao rodar a aplicação
-O projeto utiliza HTTPS por padrão
-É recomendado rodar o back-end antes do front-end
+* Certifique-se de que o banco SQLite está disponível
+* O arquivo safehouse.db será criado automaticamente ao rodar a aplicação
+* O projeto utiliza HTTPS por padrão
+* Recomendado rodar o back-end antes do front-end
