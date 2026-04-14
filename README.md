@@ -7,7 +7,7 @@ API para gerenciamento de despesas e receitas de moradores de uma residência, s
 
 ## Back-end
 
-*C#
+* C#
 * .NET 8.0 (Web API)
 * Entity Framework Core
 * SQLite
@@ -69,8 +69,7 @@ dotnet run --project SafeHouseSystem.Api
 
 A API estará disponível em:
 
-https://localhost:xxxx
-Swagger
+https://localhost:7099/api
 
 Em ambiente de desenvolvimento, a documentação interativa estará disponível em:
 
@@ -83,6 +82,7 @@ A API está configurada para aceitar requisições do front-end:
 http://localhost:5173
 
 ## Observações
+
 Certifique-se de que o banco SQLite está disponível
 O arquivo safehouse.db será criado automaticamente ao rodar a aplicação
 O projeto utiliza HTTPS por padrão
