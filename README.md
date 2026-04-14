@@ -41,25 +41,9 @@ O projeto utiliza SQLite como banco de dados local.
 Download:
 https://www.sqlite.org/download.html
 
-A base de dados é criada automaticamente com o arquivo:
+A base de dados é criada automaticamente.
 
-safehouse.db
-Estrutura do Projeto
-SafeHouseSystem/
-  SafeHouseSystem.Api/
-  SafeHouseSystem.Application/
-  SafeHouseSystem.Domain/
-  SafeHouseSystem.Infrastructure/
-  SafeHouseSystem.Tests/
-Api → Controllers, configuração e middlewares
-Application → Services, interfaces e regras de aplicação
-Domain → Entidades e regras de negócio
-Infrastructure → Repositórios e acesso a dados
-Tests → Testes unitários
-Configuração do Ambiente
-Pré-requisitos
-.NET 8 SDK instalado
-SQLite instalado
+
 
 # Como rodar o projeto
 ## restaurar dependências
