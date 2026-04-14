@@ -14,62 +14,34 @@ public class TransactionRepository : ITransactionRepository
         _context = context;
     }
 
-    public void Add(Transaction transaction)
+    public async Task AddAsync(Transaction transaction)
     {
-        _context.Transactions.Add(transaction);
-        _context.SaveChanges();
+        await _context.Transactions.AddAsync(transaction);
+        await _context.SaveChangesAsync();
     }
 
-    public Transaction? GetById(Guid id)
+    public async Task<Transaction?> GetByIdAsync(Guid id)
     {
-        return _context.Transactions
+        return await _context.Transactions
             .Include(t => t.Category)
-            .FirstOrDefault(t => t.Id == id);
+            .FirstOrDefaultAsync(t => t.Id == id);
     }
 
-
-    public IEnumerable<Transaction> GetAll()
+    public async Task<IEnumerable<Transaction>> GetAllAsync()
     {
-        return _context.Transactions
+        return await _context.Transactions
             .Include(t => t.Category)
-            .ToList();
+            .ToListAsync();
     }
 
-    public IEnumerable<(Guid CategoryId, string CategoryDescription, decimal Total)> GetTotalsByCategory()
+    public async Task DeleteAsync(Guid id)
     {
-        return _context.Transactions
-            .Include(t => t.Category)
-            .AsEnumerable()  
-            .GroupBy(t => new { t.CategoryId, t.Category.Description })
-            .Select(g => (
-                g.Key.CategoryId,
-                g.Key.Description,
-                g.Sum(t => t.Amount)
-            ));
-    }
-
-    public IEnumerable<(Guid CategoryId, string CategoryDescription, decimal Total)> GetTotalsByCategoryId(Guid categoryId)
-    {
-        return _context.Transactions
-            .Include(t => t.Category)
-            .Where(t => t.CategoryId == categoryId)
-            .AsEnumerable()
-            .GroupBy(t => new { t.CategoryId, t.Category.Description })
-            .Select(g => (
-                g.Key.CategoryId,
-                g.Key.Description,
-                g.Sum(t => t.Amount)
-            ));
-    }
-
-    public void Delete(Guid id)
-    {
-        var transaction = _context.Transactions.Find(id);
+        var transaction = await _context.Transactions.FindAsync(id);
 
         if (transaction is null)
             throw new ArgumentException("Transaction not found");
 
         _context.Transactions.Remove(transaction);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

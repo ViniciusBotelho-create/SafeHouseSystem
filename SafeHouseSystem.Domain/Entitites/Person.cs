@@ -41,12 +41,13 @@ public class Person
             throw new ArgumentException("Age cannot be negative");
     }
 
-    public void AddTransaction(string description, decimal amount, TransactionType type, Category category)
+    public Transaction AddTransaction(string description, decimal amount, TransactionType type, Category category)
     {
         if (Age < 18 && type == TransactionType.Income)
             throw new ArgumentException("Minors cannot have income");
 
         var transaction = new Transaction(description, amount, type, category, Id);
         _transactions.Add(transaction);
+        return transaction;
     }
 }

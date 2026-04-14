@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Moq;
 using SafeHouseSystem.Application.DTOs;
-using SafeHouseSystem.Application.Services;
 using SafeHouseSystem.Application.Interfaces;
+using SafeHouseSystem.Application.Services;
 using SafeHouseSystem.Domain.Entities;
 using SafeHouseSystem.Domain.Enums;
 using Xunit;
@@ -12,9 +12,8 @@ namespace SafeHouseSystem.Tests.Application;
 public class TransactionServiceTests
 {
     [Fact]
-    public void Should_Create_Transaction()
+    public async Task Should_Create_Transaction()
     {
-        // Arrange
         var transactionRepoMock = new Mock<ITransactionRepository>();
         var personRepoMock = new Mock<IPersonRepository>();
         var categoryRepoMock = new Mock<ICategoryRepository>();
@@ -22,8 +21,8 @@ public class TransactionServiceTests
         var person = new Person("John", 30);
         var category = new Category("Food", CategoryFinality.Expense);
 
-        personRepoMock.Setup(r => r.GetById(person.Id)).Returns(person);
-        categoryRepoMock.Setup(r => r.GetById(category.Id)).Returns(category);
+        personRepoMock.Setup(r => r.GetByIdAsync(person.Id)).ReturnsAsync(person);
+        categoryRepoMock.Setup(r => r.GetByIdAsync(category.Id)).ReturnsAsync(category);
 
         var service = new TransactionService(
             transactionRepoMock.Object,
@@ -39,22 +38,24 @@ public class TransactionServiceTests
             CategoryId = category.Id
         };
 
-        // Act
-        service.Create(dto);
+        await service.CreateAsync(dto);
 
-        // Assert
-        transactionRepoMock.Verify(r => r.Add(It.IsAny<Transaction>()), Times.Once);
+        transactionRepoMock.Verify(r => r.AddAsync(It.Is<Transaction>(t =>
+            t.Description == "Lunch" &&
+            t.Amount == 50 &&
+            t.Type == TransactionType.Expense)),
+            Times.Once);
     }
 
     [Fact]
-    public void Should_Throw_When_Person_Not_Found()
+    public async Task Should_Throw_When_Person_Not_Found()
     {
         var transactionRepoMock = new Mock<ITransactionRepository>();
         var personRepoMock = new Mock<IPersonRepository>();
         var categoryRepoMock = new Mock<ICategoryRepository>();
 
-        personRepoMock.Setup(r => r.GetById(It.IsAny<Guid>()))
-            .Returns((Person?)null);
+        personRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                      .ReturnsAsync((Person?)null);
 
         var service = new TransactionService(
             transactionRepoMock.Object,
@@ -70,15 +71,15 @@ public class TransactionServiceTests
             CategoryId = Guid.NewGuid()
         };
 
-        Action action = () => service.Create(dto);
+        Func<Task> action = async () => await service.CreateAsync(dto);
 
-        action.Should()
-            .Throw<ArgumentException>()
+        await action.Should()
+            .ThrowAsync<ArgumentException>()
             .WithMessage("Person not found");
     }
 
     [Fact]
-    public void Should_Throw_When_Category_Not_Found()
+    public async Task Should_Throw_When_Category_Not_Found()
     {
         var transactionRepoMock = new Mock<ITransactionRepository>();
         var personRepoMock = new Mock<IPersonRepository>();
@@ -86,11 +87,10 @@ public class TransactionServiceTests
 
         var person = new Person("John", 30);
 
-        personRepoMock.Setup(r => r.GetById(It.IsAny<Guid>()))
-            .Returns(person);
-
-        categoryRepoMock.Setup(r => r.GetById(It.IsAny<Guid>()))
-            .Returns((Category?)null);
+        personRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                      .ReturnsAsync(person);
+        categoryRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                        .ReturnsAsync((Category?)null);
 
         var service = new TransactionService(
             transactionRepoMock.Object,
@@ -106,188 +106,91 @@ public class TransactionServiceTests
             CategoryId = Guid.NewGuid()
         };
 
-        Action action = () => service.Create(dto);
+        Func<Task> action = async () => await service.CreateAsync(dto);
 
-        action.Should()
-            .Throw<ArgumentException>()
+        await action.Should()
+            .ThrowAsync<ArgumentException>()
             .WithMessage("Category not found");
     }
 
     [Fact]
-    public void Should_Return_All_Transactions()
+    public async Task Should_Return_All_Transactions()
     {
         var transactionRepoMock = new Mock<ITransactionRepository>();
 
-        transactionRepoMock.Setup(r => r.GetAll())
-            .Returns(new List<Transaction>());
+        transactionRepoMock.Setup(r => r.GetAllAsync())
+                           .ReturnsAsync(new List<Transaction>());
 
         var service = new TransactionService(
             transactionRepoMock.Object,
             Mock.Of<IPersonRepository>(),
             Mock.Of<ICategoryRepository>());
 
-        var result = service.GetAll();
+        var result = await service.GetAllAsync();
 
         result.Should().NotBeNull();
     }
 
     [Fact]
-    public void Should_Return_Transaction_By_Id()
+    public async Task Should_Return_Transaction_By_Id()
     {
         var category = new Category("Food", CategoryFinality.Expense);
         var personId = Guid.NewGuid();
 
-        var transaction = Transaction.CreateExpense(
-            "Lunch",
-            50,
-            category,
-            personId);
+        var transaction = Transaction.CreateExpense("Lunch", 50, category, personId);
 
         var repoMock = new Mock<ITransactionRepository>();
-        repoMock.Setup(r => r.GetById(transaction.Id)).Returns(transaction);
+        repoMock.Setup(r => r.GetByIdAsync(transaction.Id)).ReturnsAsync(transaction);
 
         var service = new TransactionService(
             repoMock.Object,
             Mock.Of<IPersonRepository>(),
             Mock.Of<ICategoryRepository>());
 
-        var result = service.GetById(transaction.Id);
+        var result = await service.GetByIdAsync(transaction.Id);
 
         result.Should().NotBeNull();
         result!.Id.Should().Be(transaction.Id);
     }
 
     [Fact]
-    public void Should_Throw_When_Deleting_Non_Existing_Transaction()
+    public async Task Should_Throw_When_Deleting_Non_Existing_Transaction()
     {
         var repoMock = new Mock<ITransactionRepository>();
 
-        repoMock.Setup(r => r.GetById(It.IsAny<Guid>()))
-            .Returns((Transaction?)null);
+        repoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync((Transaction?)null);
 
         var service = new TransactionService(
             repoMock.Object,
             Mock.Of<IPersonRepository>(),
             Mock.Of<ICategoryRepository>());
 
-        Action action = () => service.Delete(Guid.NewGuid());
+        Func<Task> action = async () => await service.DeleteAsync(Guid.NewGuid());
 
-        action.Should()
-            .Throw<ArgumentException>()
+        await action.Should()
+            .ThrowAsync<ArgumentException>()
             .WithMessage("Transaction not found");
     }
 
     [Fact]
-    public void Should_Delete_When_Transaction_Exists()
+    public async Task Should_Delete_When_Transaction_Exists()
     {
         var category = new Category("Food", CategoryFinality.Expense);
         var personId = Guid.NewGuid();
 
-        var transaction = Transaction.CreateExpense(
-            "Lunch",
-            50,
-            category,
-            personId);
+        var transaction = Transaction.CreateExpense("Lunch", 50, category, personId);
 
         var repoMock = new Mock<ITransactionRepository>();
-        repoMock.Setup(r => r.GetById(transaction.Id)).Returns(transaction);
+        repoMock.Setup(r => r.GetByIdAsync(transaction.Id)).ReturnsAsync(transaction);
 
         var service = new TransactionService(
             repoMock.Object,
             Mock.Of<IPersonRepository>(),
             Mock.Of<ICategoryRepository>());
 
-        service.Delete(transaction.Id);
+        await service.DeleteAsync(transaction.Id);
 
-        repoMock.Verify(r => r.Delete(transaction.Id), Times.Once);
-    }
-
-    [Fact]
-    public void Should_Return_Totals_By_Category()
-    {
-
-        var category = new Category("Food", CategoryFinality.Expense);
-        var personId = Guid.NewGuid();
-
-        var transactions = new List<(Guid, string, decimal)>
-    {
-        (category.Id, category.Description, 150)
-    };
-
-        var transactionRepoMock = new Mock<ITransactionRepository>();
-        transactionRepoMock
-            .Setup(r => r.GetTotalsByCategory())
-            .Returns(transactions);
-
-        var service = new TransactionService(
-            transactionRepoMock.Object,
-            Mock.Of<IPersonRepository>(),
-            Mock.Of<ICategoryRepository>());
-
-
-        var result = service.GetTotalsByCategory().ToList();
-
-
-        result.Should().HaveCount(1);
-        result.First().CategoryId.Should().Be(category.Id);
-        result.First().CategoryDescription.Should().Be("Food");
-        result.First().Total.Should().Be(150);
-    }
-
-    [Fact]
-    public void Should_Return_Totals_By_Specific_Category()
-    {
-
-        var category = new Category("Food", CategoryFinality.Expense);
-        var personId = Guid.NewGuid();
-
-        var categoryRepoMock = new Mock<ICategoryRepository>();
-        categoryRepoMock.Setup(r => r.GetById(category.Id)).Returns(category);
-
-        var transactions = new List<(Guid, string, decimal)>
-    {
-        (category.Id, category.Description, 150)
-    };
-
-        var transactionRepoMock = new Mock<ITransactionRepository>();
-        transactionRepoMock
-            .Setup(r => r.GetTotalsByCategoryId(category.Id))
-            .Returns(transactions);
-
-        var service = new TransactionService(
-            transactionRepoMock.Object,
-            Mock.Of<IPersonRepository>(),
-            categoryRepoMock.Object);
-
-
-        var result = service.GetTotalsByCategoryId(category.Id).ToList();
-
-
-        result.Should().HaveCount(1);
-        result.First().CategoryId.Should().Be(category.Id);
-        result.First().Total.Should().Be(150);
-    }
-
-    [Fact]
-    public void Should_Throw_When_Category_Not_Found_On_GetTotalsByCategoryId()
-    {
-
-        var categoryRepoMock = new Mock<ICategoryRepository>();
-        categoryRepoMock
-            .Setup(r => r.GetById(It.IsAny<Guid>()))
-            .Returns((Category?)null);
-
-        var service = new TransactionService(
-            Mock.Of<ITransactionRepository>(),
-            Mock.Of<IPersonRepository>(),
-            categoryRepoMock.Object);
-
-
-        Action action = () => service.GetTotalsByCategoryId(Guid.NewGuid());
-
-
-        action.Should()
-            .Throw<ArgumentException>()
-            .WithMessage("Category not found");
+        repoMock.Verify(r => r.DeleteAsync(transaction.Id), Times.Once);
     }
 }

@@ -16,32 +16,32 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] CreateCategoryDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
     {
-        _service.Create(dto);
+        await _service.CreateAsync(dto);
         return Created("", dto);
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var categories = _service.GetAll();
+        var categories = await _service.GetAllAsync();
         return Ok(categories);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var category = _service.GetById(id);
+        var category = await _service.GetByIdAsync(id);
         if (category is null)
             return NotFound(new { message = "Category not found" });
         return Ok(category);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        _service.Delete(id);
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 }

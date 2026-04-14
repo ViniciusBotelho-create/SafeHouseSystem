@@ -4,8 +4,8 @@ namespace SafeHouseSystem.Application.Interfaces;
 
 public interface ICategoryService
 {
-    void Create(CreateCategoryDto dto);
-    IEnumerable<CategoryDto> GetAll();
-    CategoryDto? GetById(Guid id);
-    void Delete(Guid id);
+    Task CreateAsync(CreateCategoryDto dto);
+    Task<IEnumerable<CategoryDto>> GetAllAsync();
+    Task<CategoryDto?> GetByIdAsync(Guid id);
+    Task DeleteAsync(Guid id);
 }

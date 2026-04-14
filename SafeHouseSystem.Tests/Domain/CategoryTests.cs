@@ -40,4 +40,11 @@ public class CategoryTests
             .Throw<ArgumentException>()
             .WithMessage("Description cannot exceed 400 characters");
     }
+
+    [Fact]
+    public void Should_Create_Category_With_Both_Finality()
+    {
+        var category = new Category("Transfer", CategoryFinality.Both);
+        category.Finality.Should().Be(CategoryFinality.Both);
+    }
 }

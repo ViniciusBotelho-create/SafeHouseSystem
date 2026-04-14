@@ -4,10 +4,10 @@ namespace SafeHouseSystem.Application.Interfaces;
 
 public interface IPersonRepository
 {
-    void Add(Person person);
-    void Update(Person person);
-    void Delete(Guid id);
-    Person? GetById(Guid id);
-    IEnumerable<Person> GetAll();
-    IEnumerable<Person> GetAllWithTransactions();
+    Task AddAsync(Person person);
+    Task UpdateAsync(Person person);
+    Task DeleteAsync(Guid id);
+    Task<Person?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Person>> GetAllAsync();
+    Task<IEnumerable<Person>> GetAllWithTransactionsAsync();
 }

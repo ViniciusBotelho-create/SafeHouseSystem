@@ -14,26 +14,26 @@ public class PersonService : IPersonService
         _repository = repository;
     }
 
-    public void Create(CreatePersonDto dto)
+    public async Task CreateAsync(CreatePersonDto dto)
     {
         var person = new Person(dto.Name, dto.Age);
-        _repository.Add(person);
+        await _repository.AddAsync(person);
     }
 
-    public IEnumerable<PersonDto> GetAll()
+    public async Task<IEnumerable<PersonDto>> GetAllAsync()
     {
-        return _repository.GetAll()
-            .Select(p => new PersonDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Age = p.Age
-            });
+        var persons = await _repository.GetAllAsync();
+        return persons.Select(p => new PersonDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Age = p.Age
+        });
     }
 
-    public PersonDto? GetById(Guid id)
+    public async Task<PersonDto?> GetByIdAsync(Guid id)
     {
-        var person = _repository.GetById(id);
+        var person = await _repository.GetByIdAsync(id);
         if (person is null) return null;
 
         return new PersonDto
@@ -44,30 +44,30 @@ public class PersonService : IPersonService
         };
     }
 
-    public void Update(Guid id, UpdatePersonDto dto)
+    public async Task UpdateAsync(Guid id, UpdatePersonDto dto)
     {
-        var person = _repository.GetById(id);
+        var person = await _repository.GetByIdAsync(id);
 
         if (person is null)
             throw new ArgumentException("Person not found");
 
         person.Update(dto.Name, dto.Age);
-        _repository.Update(person);
+        await _repository.UpdateAsync(person);
     }
 
-    public void Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        var person = _repository.GetById(id);
+        var person = await _repository.GetByIdAsync(id);
 
         if (person is null)
             throw new ArgumentException("Person not found");
 
-        _repository.Delete(id);
+        await _repository.DeleteAsync(id);
     }
 
-    public SummaryDto GetSummary()
+    public async Task<SummaryDto> GetSummaryAsync()
     {
-        var persons = _repository.GetAllWithTransactions();
+        var persons = await _repository.GetAllWithTransactionsAsync();
 
         var personTotals = persons.Select(p => new PersonTotalsDto
         {

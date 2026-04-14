@@ -1,7 +1,6 @@
 ﻿using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
 
-
 namespace SafeHouseSystem.Application.Services;
 
 public class TransactionService : ITransactionService
@@ -20,42 +19,37 @@ public class TransactionService : ITransactionService
         _categoryRepository = categoryRepository;
     }
 
-    public void Create(CreateTransactionDto dto)
+    public async Task CreateAsync(CreateTransactionDto dto)
     {
-        var person = _personRepository.GetById(dto.PersonId);
+        var person = await _personRepository.GetByIdAsync(dto.PersonId);
         if (person is null)
             throw new ArgumentException("Person not found");
 
-        var category = _categoryRepository.GetById(dto.CategoryId);
+        var category = await _categoryRepository.GetByIdAsync(dto.CategoryId);
         if (category is null)
             throw new ArgumentException("Category not found");
 
-
-        person.AddTransaction(dto.Description, dto.Amount, dto.Type, category);
-
-
-        var transaction = person.Transactions.Last();
-
-        _transactionRepository.Add(transaction);
+        var transaction = person.AddTransaction(dto.Description, dto.Amount, dto.Type, category);
+        await _transactionRepository.AddAsync(transaction);
     }
 
-    public IEnumerable<TransactionDto> GetAll()
+    public async Task<IEnumerable<TransactionDto>> GetAllAsync()
     {
-        return _transactionRepository.GetAll()
-            .Select(t => new TransactionDto
-            {
-                Id = t.Id,
-                Description = t.Description,
-                Amount = t.Amount,
-                Type = t.Type,
-                CategoryId = t.Category.Id,
-                CategoryDescription = t.Category.Description
-            });
+        var transactions = await _transactionRepository.GetAllAsync();
+        return transactions.Select(t => new TransactionDto
+        {
+            Id = t.Id,
+            Description = t.Description,
+            Amount = t.Amount,
+            Type = t.Type,
+            CategoryId = t.Category.Id,
+            CategoryDescription = t.Category.Description
+        });
     }
 
-    public TransactionDto? GetById(Guid id)
+    public async Task<TransactionDto?> GetByIdAsync(Guid id)
     {
-        var t = _transactionRepository.GetById(id);
+        var t = await _transactionRepository.GetByIdAsync(id);
         if (t is null) return null;
 
         return new TransactionDto
@@ -69,39 +63,13 @@ public class TransactionService : ITransactionService
         };
     }
 
-    public IEnumerable<CategoryTotalsDto> GetTotalsByCategory()
+    public async Task DeleteAsync(Guid id)
     {
-        return _transactionRepository.GetTotalsByCategory()
-            .Select(x => new CategoryTotalsDto
-            {
-                CategoryId = x.CategoryId,
-                CategoryDescription = x.CategoryDescription,
-                Total = x.Total
-            });
-    }
-
-    public IEnumerable<CategoryTotalsDto> GetTotalsByCategoryId(Guid categoryId)
-    {
-        var category = _categoryRepository.GetById(categoryId);
-        if (category is null)
-            throw new ArgumentException("Category not found");
-
-        return _transactionRepository.GetTotalsByCategoryId(categoryId)
-            .Select(x => new CategoryTotalsDto
-            {
-                CategoryId = x.CategoryId,
-                CategoryDescription = x.CategoryDescription,
-                Total = x.Total
-            });
-    }
-
-    public void Delete(Guid id)
-    {
-        var transaction = _transactionRepository.GetById(id);
+        var transaction = await _transactionRepository.GetByIdAsync(id);
 
         if (transaction is null)
             throw new ArgumentException("Transaction not found");
 
-        _transactionRepository.Delete(id);
+        await _transactionRepository.DeleteAsync(id);
     }
 }

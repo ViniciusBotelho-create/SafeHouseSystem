@@ -130,4 +130,16 @@ public class TransactionTests
             .Throw<ArgumentException>()
             .WithMessage("Amount must be greater than zero");
     }
+
+    [Fact]
+    public void Should_Create_Valid_Income_Transaction()
+    {
+        var category = new Category("Salary", CategoryFinality.Income);
+        var personId = Guid.NewGuid();
+
+        var transaction = Transaction.CreateIncome("Salary", 3000, category, personId);
+
+        transaction.Type.Should().Be(TransactionType.Income);
+        transaction.Amount.Should().Be(3000);
+    }
 }

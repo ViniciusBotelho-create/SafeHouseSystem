@@ -16,11 +16,11 @@ public class PersonController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] CreatePersonDto dto)
+    public async Task<IActionResult> Create([FromBody] CreatePersonDto dto)
     {
         try
         {
-            _service.Create(dto);
+            await _service.CreateAsync(dto);
             return Created("", dto);
         }
         catch (ArgumentException ex)
@@ -30,16 +30,16 @@ public class PersonController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var persons = _service.GetAll();
+        var persons = await _service.GetAllAsync();
         return Ok(persons);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var person = _service.GetById(id);
+        var person = await _service.GetByIdAsync(id);
 
         if (person is null)
             return NotFound(new { message = "Person not found" });
@@ -48,11 +48,11 @@ public class PersonController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(Guid id, [FromBody] UpdatePersonDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdatePersonDto dto)
     {
         try
         {
-            _service.Update(id, dto);
+            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
         catch (ArgumentException ex)
@@ -62,11 +62,11 @@ public class PersonController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         try
         {
-            _service.Delete(id);
+            await _service.DeleteAsync(id);
             return NoContent();
         }
         catch (ArgumentException)
@@ -75,11 +75,10 @@ public class PersonController : ControllerBase
         }
     }
 
-
     [HttpGet("summary")]
-    public IActionResult GetSummary()
+    public async Task<IActionResult> GetSummary()
     {
-        var summary = _service.GetSummary();
+        var summary = await _service.GetSummaryAsync();
         return Ok(summary);
     }
 }

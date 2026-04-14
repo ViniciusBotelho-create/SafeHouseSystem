@@ -4,8 +4,8 @@ namespace SafeHouseSystem.Application.Interfaces;
 
 public interface ICategoryRepository
 {
-    void Add(Category category);
-    void Delete(Guid id);
-    Category? GetById(Guid id);
-    IEnumerable<Category> GetAll();
+    Task AddAsync(Category category);
+    Task DeleteAsync(Guid id);
+    Task<Category?> GetByIdAsync(Guid id);
+    Task<IEnumerable<Category>> GetAllAsync();
 }
