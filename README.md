@@ -26,7 +26,7 @@ API para gerenciamento de despesas e receitas de moradores de uma residência, s
 * Integração com front-end
 * Tratamento global de exceções (Middleware)
 * Documentação com Swagger
-* Integração com Front-end
+
 
 O front-end do sistema pode ser encontrado em:
 
