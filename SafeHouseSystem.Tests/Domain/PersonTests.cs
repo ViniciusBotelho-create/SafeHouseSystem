@@ -1,6 +1,7 @@
 using FluentAssertions;
-using Xunit;
 using SafeHouseSystem.Domain.Entities;
+using SafeHouseSystem.Domain.Enums;
+using Xunit;
 
 namespace SafeHouseSystem.Tests.Domain;
 
@@ -60,7 +61,7 @@ public class PersonTests
     }
 
     [Fact]
-    public void Should_Generate_Different_Ids_For_Persons_With_Same_Name()
+    public void Should_Generate_Unique_Id_On_Creation()
     {
         var name = "John";
 
@@ -69,5 +70,18 @@ public class PersonTests
         var person2 = new Person(name, 30);
 
         person1.Id.Should().NotBe(person2.Id);
+    }
+    [Fact]
+    public void Should_Throw_When_Minor_Tries_To_Add_Income()
+    {
+        var person = new Person("João", 16);
+        var category = new Category("Salary", CategoryFinality.Income);
+
+        Action action = () =>
+            person.AddTransaction("Mesada", 500, TransactionType.Income, category);
+
+        action.Should()
+            .Throw<ArgumentException>()
+            .WithMessage("Minors cannot have income");
     }
 }

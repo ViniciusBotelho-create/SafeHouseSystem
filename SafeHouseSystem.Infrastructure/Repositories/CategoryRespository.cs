@@ -1,4 +1,5 @@
-﻿using SafeHouseSystem.Application.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
 using SafeHouseSystem.Infrastructure.Data;
 
@@ -13,30 +14,30 @@ public class CategoryRepository : ICategoryRepository
         _context = context;
     }
 
-    public void Add(Category category)
+    public async Task AddAsync(Category category)
     {
-        _context.Categories.Add(category);
-        _context.SaveChanges();
+        await _context.Categories.AddAsync(category);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        var category = _context.Categories.Find(id);
+        var category = await _context.Categories.FindAsync(id);
 
         if (category is null)
-            return;
+            throw new ArgumentException("Category not found");
 
         _context.Categories.Remove(category);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Category? GetById(Guid id)
+    public async Task<Category?> GetByIdAsync(Guid id)
     {
-        return _context.Categories.Find(id);
+        return await _context.Categories.FindAsync(id);
     }
 
-    public IEnumerable<Category> GetAll()
+    public async Task<IEnumerable<Category>> GetAllAsync()
     {
-        return _context.Categories.ToList();
+        return await _context.Categories.ToListAsync();
     }
 }

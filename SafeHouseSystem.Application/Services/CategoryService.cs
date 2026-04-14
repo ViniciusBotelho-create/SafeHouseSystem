@@ -2,9 +2,7 @@
 using SafeHouseSystem.Application.Interfaces;
 using SafeHouseSystem.Domain.Entities;
 
-
 namespace SafeHouseSystem.Application.Services;
-
 
 public class CategoryService : ICategoryService
 {
@@ -15,26 +13,26 @@ public class CategoryService : ICategoryService
         _repository = repository;
     }
 
-    public void Create(CreateCategoryDto dto)
+    public async Task CreateAsync(CreateCategoryDto dto)
     {
         var category = new Category(dto.Description, dto.Finality);
-        _repository.Add(category);
+        await _repository.AddAsync(category);
     }
 
-    public IEnumerable<CategoryDto> GetAll()
+    public async Task<IEnumerable<CategoryDto>> GetAllAsync()
     {
-        return _repository.GetAll()
-            .Select(c => new CategoryDto
-            {
-                Id = c.Id,
-                Description = c.Description,
-                Finality = c.Finality
-            });
+        var categories = await _repository.GetAllAsync();
+        return categories.Select(c => new CategoryDto
+        {
+            Id = c.Id,
+            Description = c.Description,
+            Finality = c.Finality
+        });
     }
 
-    public CategoryDto? GetById(Guid id)
+    public async Task<CategoryDto?> GetByIdAsync(Guid id)
     {
-        var category = _repository.GetById(id);
+        var category = await _repository.GetByIdAsync(id);
 
         if (category is null)
             return null;
@@ -47,13 +45,13 @@ public class CategoryService : ICategoryService
         };
     }
 
-    public void Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        var category = _repository.GetById(id);
+        var category = await _repository.GetByIdAsync(id);
 
         if (category is null)
             throw new ArgumentException("Category not found");
 
-        _repository.Delete(id);
+        await _repository.DeleteAsync(id);
     }
 }

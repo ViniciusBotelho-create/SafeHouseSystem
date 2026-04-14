@@ -16,46 +16,32 @@ public class TransactionController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] CreateTransactionDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateTransactionDto dto)
     {
-        _service.Create(dto);
+        await _service.CreateAsync(dto);
         return Created("", dto);
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var transactions = _service.GetAll();
+        var transactions = await _service.GetAllAsync();
         return Ok(transactions);
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        var transaction = _service.GetById(id);
+        var transaction = await _service.GetByIdAsync(id);
         if (transaction is null)
             return NotFound(new { message = "Transaction not found" });
         return Ok(transaction);
     }
 
-    [HttpGet("totals-by-category")]
-    public IActionResult GetTotalsByCategory()
-    {
-        var totals = _service.GetTotalsByCategory();
-        return Ok(totals);
-    }
-
-    [HttpGet("totals-by-category/{categoryId}")]
-    public IActionResult GetTotalsByCategoryId(Guid categoryId)
-    {
-        var totals = _service.GetTotalsByCategoryId(categoryId);
-        return Ok(totals);
-    }
-
     [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        _service.Delete(id);
+        await _service.DeleteAsync(id);
         return NoContent();
     }
 }

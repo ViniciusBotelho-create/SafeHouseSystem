@@ -14,44 +14,43 @@ public class PersonRepository : IPersonRepository
         _context = context;
     }
 
-    public void Add(Person person)
+    public async Task AddAsync(Person person)
     {
-        _context.Persons.Add(person);
-        _context.SaveChanges();
+        await _context.Persons.AddAsync(person);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(Person person)
+    public async Task UpdateAsync(Person person)
     {
         _context.Persons.Update(person);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        var person = _context.Persons.Find(id);
+        var person = await _context.Persons.FindAsync(id);
 
         if (person is null)
             throw new ArgumentException("Person not found");
 
         _context.Persons.Remove(person);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Person? GetById(Guid id)
+    public async Task<Person?> GetByIdAsync(Guid id)
     {
-        return _context.Persons.Find(id);
+        return await _context.Persons.FindAsync(id);
     }
 
-    public IEnumerable<Person> GetAll()
+    public async Task<IEnumerable<Person>> GetAllAsync()
     {
-        return _context.Persons.ToList();
+        return await _context.Persons.ToListAsync();
     }
 
-
-    public IEnumerable<Person> GetAllWithTransactions()
+    public async Task<IEnumerable<Person>> GetAllWithTransactionsAsync()
     {
-        return _context.Persons
+        return await _context.Persons
             .Include(p => p.Transactions)
-            .ToList();
+            .ToListAsync();
     }
 }

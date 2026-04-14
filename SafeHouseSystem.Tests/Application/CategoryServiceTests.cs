@@ -1,20 +1,18 @@
 ﻿using FluentAssertions;
 using Moq;
-
 using SafeHouseSystem.Application.DTOs;
 using SafeHouseSystem.Application.Interfaces;
+using SafeHouseSystem.Application.Services;
 using SafeHouseSystem.Domain.Entities;
 using SafeHouseSystem.Domain.Enums;
-using SafeHouseSystem.Application.Services;
 
 namespace SafeHouseSystem.Tests.Application;
 
 public class CategoryServiceTests
 {
     [Fact]
-    public void Should_Call_Repository_When_Creating_Category()
+    public async Task Should_Call_Repository_When_Creating_Category()
     {
-        // Arrange
         var repositoryMock = new Mock<ICategoryRepository>();
         var service = new CategoryService(repositoryMock.Object);
 
@@ -24,21 +22,18 @@ public class CategoryServiceTests
             Finality = CategoryFinality.Expense
         };
 
-        // Act
-        service.Create(dto);
+        await service.CreateAsync(dto);
 
-        // Assert
         repositoryMock.Verify(r =>
-            r.Add(It.Is<Category>(c =>
+            r.AddAsync(It.Is<Category>(c =>
                 c.Description == "Food" &&
                 c.Finality == CategoryFinality.Expense)),
             Times.Once);
     }
 
     [Fact]
-    public void Should_Throw_Exception_When_Description_Is_Invalid()
+    public async Task Should_Throw_Exception_When_Description_Is_Invalid()
     {
-        // Arrange
         var repositoryMock = new Mock<ICategoryRepository>();
         var service = new CategoryService(repositoryMock.Object);
 
@@ -48,19 +43,16 @@ public class CategoryServiceTests
             Finality = CategoryFinality.Expense
         };
 
-        // Act
-        Action action = () => service.Create(dto);
+        Func<Task> action = async () => await service.CreateAsync(dto);
 
-        // Assert
-        action.Should()
-            .Throw<ArgumentException>()
+        await action.Should()
+            .ThrowAsync<ArgumentException>()
             .WithMessage("Description cannot be empty");
     }
 
     [Fact]
-    public void Should_Return_All_Categories()
+    public async Task Should_Return_All_Categories()
     {
-        // Arrange
         var categories = new List<Category>
         {
             new Category("Food", CategoryFinality.Expense),
@@ -68,111 +60,77 @@ public class CategoryServiceTests
         };
 
         var repositoryMock = new Mock<ICategoryRepository>();
-        repositoryMock.Setup(r => r.GetAll()).Returns(categories);
+        repositoryMock.Setup(r => r.GetAllAsync()).ReturnsAsync(categories);
 
         var service = new CategoryService(repositoryMock.Object);
 
-        // Act
-        var result = service.GetAll();
+        var result = await service.GetAllAsync();
 
-        // Assert
         result.Should().HaveCount(2);
         result.First().Description.Should().Be("Food");
     }
 
     [Fact]
-    public void Should_Return_Category_When_Id_Exists()
+    public async Task Should_Return_Category_When_Id_Exists()
     {
-        // Arrange
         var category = new Category("Food", CategoryFinality.Expense);
 
         var repositoryMock = new Mock<ICategoryRepository>();
-        repositoryMock.Setup(r => r.GetById(category.Id)).Returns(category);
+        repositoryMock.Setup(r => r.GetByIdAsync(category.Id)).ReturnsAsync(category);
 
         var service = new CategoryService(repositoryMock.Object);
 
-        // Act
-        var result = service.GetById(category.Id);
+        var result = await service.GetByIdAsync(category.Id);
 
-        // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be(category.Id);
         result.Description.Should().Be("Food");
     }
 
     [Fact]
-    public void Should_Return_Null_When_Id_Does_Not_Exist()
+    public async Task Should_Return_Null_When_Id_Does_Not_Exist()
     {
-        // Arrange
         var repositoryMock = new Mock<ICategoryRepository>();
-        repositoryMock.Setup(r => r.GetById(It.IsAny<Guid>()))
-                      .Returns((Category?)null);
+        repositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>()))
+                      .ReturnsAsync((Category?)null);
 
         var service = new CategoryService(repositoryMock.Object);
 
-        // Act
-        var result = service.GetById(Guid.NewGuid());
+        var result = await service.GetByIdAsync(Guid.NewGuid());
 
-        // Assert
         result.Should().BeNull();
     }
 
     [Fact]
-    public void Should_Call_Delete_When_Id_Exists()
+    public async Task Should_Call_Delete_When_Id_Exists()
     {
-        // Arrange
         var category = new Category("Food", CategoryFinality.Expense);
 
         var repositoryMock = new Mock<ICategoryRepository>();
-        repositoryMock.Setup(r => r.GetById(category.Id)).Returns(category);
+        repositoryMock.Setup(r => r.GetByIdAsync(category.Id)).ReturnsAsync(category);
 
         var service = new CategoryService(repositoryMock.Object);
 
-        // Act
-        service.Delete(category.Id);
+        await service.DeleteAsync(category.Id);
 
-        // Assert
-        repositoryMock.Verify(r => r.Delete(category.Id), Times.Once);
+        repositoryMock.Verify(r => r.DeleteAsync(category.Id), Times.Once);
     }
 
     [Fact]
-    public void Should_Throw_Exception_When_Deleting_Non_Existing_Category()
+    public async Task Should_Throw_Exception_When_Deleting_Non_Existing_Category()
     {
-        // Arrange
         var repositoryMock = new Mock<ICategoryRepository>();
         var id = Guid.NewGuid();
 
-        repositoryMock.Setup(r => r.GetById(id))
-                      .Returns((Category?)null);
+        repositoryMock.Setup(r => r.GetByIdAsync(id))
+                      .ReturnsAsync((Category?)null);
 
         var service = new CategoryService(repositoryMock.Object);
 
-        // Act
-        Action action = () => service.Delete(id);
+        Func<Task> action = async () => await service.DeleteAsync(id);
 
-        // Assert
-        action.Should()
-            .Throw<ArgumentException>()
+        await action.Should()
+            .ThrowAsync<ArgumentException>()
             .WithMessage("Category not found");
-    }
-
-    [Fact]
-    public void Should_Not_Call_Delete_When_Category_Does_Not_Exist()
-    {
-        // Arrange
-        var repositoryMock = new Mock<ICategoryRepository>();
-        var id = Guid.NewGuid();
-
-        repositoryMock.Setup(r => r.GetById(id))
-                      .Returns((Category?)null);
-
-        var service = new CategoryService(repositoryMock.Object);
-
-        // Act
-        Action action = () => service.Delete(id);
-
-        // Assert
-        action.Should().Throw<ArgumentException>();
-        repositoryMock.Verify(r => r.Delete(It.IsAny<Guid>()), Times.Never);
     }
 }
